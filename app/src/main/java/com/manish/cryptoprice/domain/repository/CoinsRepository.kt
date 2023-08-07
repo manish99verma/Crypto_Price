@@ -21,7 +21,7 @@ interface CoinsRepository {
 
     suspend fun getCoinsList(): Flow<List<CoinsListItem>>
 
-    suspend fun get24hrsHourlyPrices(id: String): Flow<GraphValues>
+    suspend fun getDailyPriceChart(id: String): Flow<GraphValues>
 
     suspend fun getCoinDetails(id: String): Flow<CoinDetails>
 }

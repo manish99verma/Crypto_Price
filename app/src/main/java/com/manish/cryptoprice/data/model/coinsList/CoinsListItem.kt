@@ -35,4 +35,7 @@ data class CoinsListItem(
     val symbol: String,
     val total_supply: Double,
     val total_volume: Double,
+
+    //Adding Sparkline
+    val sparkline_in_7d: Sparkline
 )
