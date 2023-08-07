@@ -1,0 +1,7 @@
+{
+  "status": {
+    "timestamp": "2023-08-05T11:40:18.664+00:00",
+    "error_code": 10005,
+    "error_message": "interval=hourly is exclusive to Enterprise plan customers only. Please contact api@coingecko.com."
+  }
+}
