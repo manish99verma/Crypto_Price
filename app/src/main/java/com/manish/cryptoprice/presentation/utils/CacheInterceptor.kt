@@ -14,7 +14,6 @@ class CacheInterceptor : Interceptor {
         val response: Response = chain.proceed(chain.request())
 
         val cacheTime: Pair<Int, TimeUnit> = setCacheTime(chain.call().request().url)
-        Log.d("Cache", "intercept: time: $cacheTime")
 
         val cacheControl = CacheControl.Builder()
             .maxAge(cacheTime.first, cacheTime.second)
@@ -27,7 +26,6 @@ class CacheInterceptor : Interceptor {
 
     private fun setCacheTime(httpUrl: HttpUrl): Pair<Int, TimeUnit> {
         val url = httpUrl.toString()
-        Log.d("Cache", "setCacheTime: url: $url")
 
         if (isGetCoinList(url))
             return Pair(5, TimeUnit.MINUTES)
@@ -67,6 +65,4 @@ class CacheInterceptor : Interceptor {
 
         return s1.size == s2.size && s1[0] == s2[0]
     }
-
-
 }

@@ -9,8 +9,8 @@ class MainViewModel(
     private val getCoinsListUseCase: GetCoinsListUseCase,
     private val get24HoursHourlyPricesListUseCase: Get24HoursHourlyPricesListUseCase
 ) : ViewModel() {
-    public fun getCoinsList() = liveData {
-        getCoinsListUseCase.execute().collect() {
+    public fun getCoinsList(sortBy:String) = liveData {
+        getCoinsListUseCase.execute(sortBy).collect() {
             emit(it)
         }
     }

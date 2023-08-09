@@ -19,7 +19,7 @@ interface CoinsRepository {
             precision: String
         ): Flow<CoinsList>*/
 
-    suspend fun getCoinsList(): Flow<List<CoinsListItem>>
+    suspend fun getCoinsList(sortBy: String): Flow<List<CoinsListItem>>
 
     suspend fun getDailyPriceChart(id: String): Flow<GraphValues>
 

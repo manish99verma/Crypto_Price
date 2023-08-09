@@ -1,28 +1,28 @@
 package com.manish.cryptoprice.presentation.ui.activities
 
 import android.os.Bundle
-import android.text.Html
-import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.parseAsHtml
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.manish.cryptoprice.R
+import com.manish.cryptoprice.data.model.chart.GraphValues
 import com.manish.cryptoprice.data.model.coinsList.CoinsListItem
 import com.manish.cryptoprice.databinding.ActivityDetailsBinding
 import com.manish.cryptoprice.presentation.ui.view_models.DetailsViewModel
 import com.manish.cryptoprice.presentation.ui.view_models.DetailsViewModelFactory
 import com.manish.cryptoprice.presentation.utils.Utility
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
@@ -40,10 +40,15 @@ class DetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_details)
+        binding = ActivityDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         detailsViewModel =
             ViewModelProvider(this, detailsViewModelFactory)[DetailsViewModel::class.java]
+
+        binding.backBtn.setOnClickListener {
+            onBackPressed()
+        }
 
         val type = object : TypeToken<CoinsListItem?>() {}.type
         val json = intent.getStringExtra("coin_list_item")
@@ -105,24 +110,37 @@ class DetailsActivity : AppCompatActivity() {
 
         //Graph
         detailsViewModel.get24HoursPricesList(coin.id).observe(this) {
-            lifecycleScope.launch(Dispatchers.IO) {
-                val seriesData = arrayOfNulls<DataPoint>(it.prices.size)
-                Log.d("TAG", "setUpGraph: Loaded ${coin.id} -> ${it.prices.size}")
+            Log.d("TAG", "setUpGraph: Loaded ${coin.id} -> ${it.prices.size}")
+            setUpGraph(coin.price_change_24h > 0, it)
+            binding.loadingBarGraph.visibility = View.GONE
+        }
+    }
 
-                var i = 0
-                it.prices.forEach { curr ->
-                    seriesData[i++] = DataPoint(curr[0], curr[1])
-                }
+    private fun setUpGraph(isGreen: Boolean, graphValues: GraphValues) {
+        binding.graphView.apply {
+            visibility = View.VISIBLE
+            removeAllSeries()
+            gridLabelRenderer.isVerticalLabelsVisible = false
+            gridLabelRenderer.isHorizontalLabelsVisible = false
+            gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+        }
 
-                val series = LineGraphSeries(seriesData)
+        CoroutineScope(IO).launch {
+            val seriesData = arrayOfNulls<DataPoint>(graphValues.prices.size)
 
-                if (coin.price_change_24h > 0) series.color = getColor(R.color.gain_increased)
-                else series.color = getColor(R.color.gain_decreased)
+            graphValues.prices.forEachIndexed { i, g ->
+                seriesData[i] = DataPoint(i + 1.0, g[1])
+            }
 
-                withContext(Dispatchers.Main) {
-                    binding.graphView.addSeries(series)
-                }
+            val series = LineGraphSeries(seriesData)
+
+            if (isGreen) series.color = getColor(R.color.gain_increased)
+            else series.color = getColor(R.color.gain_decreased)
+
+            withContext(Main) {
+                binding.graphView.addSeries(series)
             }
         }
+
     }
 }

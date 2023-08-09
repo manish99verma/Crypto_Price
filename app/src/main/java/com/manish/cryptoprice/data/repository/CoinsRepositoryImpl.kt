@@ -3,6 +3,7 @@ package com.manish.cryptoprice.data.repository
 import android.util.Log
 import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
 import com.manish.cryptoprice.data.model.chart.GraphValues
+import com.manish.cryptoprice.data.model.coinsList.CoinsList
 import com.manish.cryptoprice.data.model.coinsList.CoinsListItem
 import com.manish.cryptoprice.data.model.description.CoinDetails
 import com.manish.cryptoprice.data.model.description.Description
@@ -10,21 +11,22 @@ import com.manish.cryptoprice.data.model.description.Image
 import com.manish.cryptoprice.domain.repository.CoinsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
+import kotlin.math.log
 
 class CoinsRepositoryImpl(
     private val coinsWebDataSource: CoinsWebDataSource
 ) : CoinsRepository {
-    override suspend fun getCoinsList(): Flow<List<CoinsListItem>> {
+    override suspend fun getCoinsList(sortBy: String): Flow<List<CoinsListItem>> {
         return flow {
-            emit(getCoinListFromWeb())
+            emit(getCoinListFromWeb(sortBy))
         }
     }
 
-
-    private suspend fun getCoinListFromWeb(): List<CoinsListItem> {
+    private suspend fun getCoinListFromWeb(sortBy: String): List<CoinsListItem> {
         val response = coinsWebDataSource.getCoinsList(
             "usd",
-            "market_cap_desc",
+            sortBy,
             100,
             1,
             true,
@@ -33,10 +35,23 @@ class CoinsRepositoryImpl(
 
         val body = response.body()
         if (body != null) {
-            Log.d("TAG", "getCoinListFromWeb: ")
+            responseFromServerOrCache(response)
             return body
         }
+
+        // 429 -> Server limit exceeded
+        Log.d("TAG", "getCoinListFromWeb: ${response.errorBody()?.string()}")
         return emptyList()
+    }
+
+    private fun responseFromServerOrCache(response: Response<CoinsList>) {
+        if (response.raw().cacheResponse != null && response.raw().networkResponse != null) {
+            Log.d("TAG", "Mixed Response")
+        } else if (response.raw().cacheResponse == null) {
+            Log.d("TAG", "Network Response")
+        } else {
+            Log.d("TAG", "Cache Response")
+        }
     }
 
     override suspend fun getDailyPriceChart(id: String): Flow<GraphValues> {
