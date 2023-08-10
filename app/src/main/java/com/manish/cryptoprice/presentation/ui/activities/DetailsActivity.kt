@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
 
@@ -113,7 +114,37 @@ class DetailsActivity : AppCompatActivity() {
             Log.d("TAG", "setUpGraph: Loaded ${coin.id} -> ${it.prices.size}")
             setUpGraph(coin.price_change_24h > 0, it)
             binding.loadingBarGraph.visibility = View.GONE
+            setDate()
         }
+    }
+
+    private fun setDate() {
+        val sTime = System.currentTimeMillis()
+        var time = System.currentTimeMillis()
+        val dayMilli = 24 * 60 * 60 * 1000L
+        time -= dayMilli
+
+        val dateFormatter = SimpleDateFormat("dd MMM yyyy")
+
+        var dateYesterday = dateFormatter.format(time)
+        if (dateYesterday[0] == '0')
+            dateYesterday = dateYesterday.substring(1)
+
+        time -= 364L * dayMilli
+        var dateLastYear = dateFormatter.format(time)
+        if (dateLastYear[0] == '0')
+            dateLastYear = dateLastYear.substring(1)
+
+        val builder = StringBuilder().apply {
+            append(dateLastYear)
+            append(" - ")
+            append(dateYesterday)
+        }
+
+        Log.d("TAG", "setDate: TimeTaken: ${System.currentTimeMillis() - sTime} ms")
+
+        binding.txt1year.text = builder
+        binding.txt1year.visibility = View.VISIBLE
     }
 
     private fun setUpGraph(isGreen: Boolean, graphValues: GraphValues) {

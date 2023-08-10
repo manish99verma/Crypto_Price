@@ -1,7 +1,7 @@
-package com.manish.cryptoprice.data.datasource.implementations
+package com.manish.cryptoprice.data.repository.datasource.implementations
 
 import com.manish.cryptoprice.data.api.CoinGeckoService
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
+import com.manish.cryptoprice.data.repository.datasource.interfaces.CoinsWebDataSource
 import com.manish.cryptoprice.data.model.chart.GraphValues
 import com.manish.cryptoprice.data.model.coinsList.CoinsList
 import com.manish.cryptoprice.data.model.description.CoinDetails

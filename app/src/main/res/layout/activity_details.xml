@@ -142,7 +142,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/graph_card"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/top_cardView"
         android:layout_marginTop="10dp"
         app:cardBackgroundColor="@color/white"
@@ -151,14 +151,15 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp" >
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/graphView"
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="150dp"
+                android:visibility="invisible" />
 
             <ProgressBar
                 android:id="@+id/loading_bar_graph"
@@ -167,6 +168,15 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="10 Aug 2022 - 9 Aug 2023"
+                android:textColor="@color/black"
+                android:id="@+id/txt_1year"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/graphView"
+                android:layout_marginBottom="6dp"
+                android:layout_height="wrap_content" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
@@ -186,9 +196,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
+            android:paddingHorizontal="20dp"
             android:paddingTop="10dp"
-            android:paddingBottom="3dp"
-            android:paddingHorizontal="20dp">
+            android:paddingBottom="3dp">
 
             <TextView
                 android:id="@+id/txt_description"

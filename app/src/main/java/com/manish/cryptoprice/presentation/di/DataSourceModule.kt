@@ -1,8 +1,8 @@
 package com.manish.cryptoprice.presentation.di
 
 import com.manish.cryptoprice.data.api.CoinGeckoService
-import com.manish.cryptoprice.data.datasource.implementations.CoinsWebDataSourceImpl
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
+import com.manish.cryptoprice.data.repository.datasource.implementations.CoinsWebDataSourceImpl
+import com.manish.cryptoprice.data.repository.datasource.interfaces.CoinsWebDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

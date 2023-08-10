@@ -1,5 +1,6 @@
 package com.manish.cryptoprice.domain.repository
 
+import com.manish.cryptoprice.data.model.ApiResponse
 import com.manish.cryptoprice.data.model.chart.GraphValues
 import com.manish.cryptoprice.data.model.coinsList.CoinsListItem
 import com.manish.cryptoprice.data.model.description.CoinDetails
@@ -19,7 +20,7 @@ interface CoinsRepository {
             precision: String
         ): Flow<CoinsList>*/
 
-    suspend fun getCoinsList(sortBy: String): Flow<List<CoinsListItem>>
+    suspend fun getCoinsList(sortBy: String): Flow<ApiResponse>
 
     suspend fun getDailyPriceChart(id: String): Flow<GraphValues>
 

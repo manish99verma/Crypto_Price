@@ -1,6 +1,6 @@
 package com.manish.cryptoprice.presentation.di
 
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
+import com.manish.cryptoprice.data.repository.datasource.interfaces.CoinsWebDataSource
 import com.manish.cryptoprice.data.repository.CoinsRepositoryImpl
 import com.manish.cryptoprice.domain.repository.CoinsRepository
 import dagger.Module

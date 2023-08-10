@@ -1,4 +1,4 @@
-package com.manish.cryptoprice.data.datasource.interfaces
+package com.manish.cryptoprice.data.repository.datasource.interfaces
 
 import com.manish.cryptoprice.data.model.chart.GraphValues
 import com.manish.cryptoprice.data.model.coinsList.CoinsList

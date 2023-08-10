@@ -1,7 +1,8 @@
 package com.manish.cryptoprice.data.repository
 
 import android.util.Log
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
+import com.manish.cryptoprice.data.model.ApiResponse
+import com.manish.cryptoprice.data.repository.datasource.interfaces.CoinsWebDataSource
 import com.manish.cryptoprice.data.model.chart.GraphValues
 import com.manish.cryptoprice.data.model.coinsList.CoinsList
 import com.manish.cryptoprice.data.model.coinsList.CoinsListItem
@@ -17,13 +18,15 @@ import kotlin.math.log
 class CoinsRepositoryImpl(
     private val coinsWebDataSource: CoinsWebDataSource
 ) : CoinsRepository {
-    override suspend fun getCoinsList(sortBy: String): Flow<List<CoinsListItem>> {
+    override suspend fun getCoinsList(sortBy: String): Flow<ApiResponse> {
         return flow {
             emit(getCoinListFromWeb(sortBy))
         }
     }
 
-    private suspend fun getCoinListFromWeb(sortBy: String): List<CoinsListItem> {
+    private suspend fun getCoinListFromWeb(sortBy: String): ApiResponse {
+
+
         val response = coinsWebDataSource.getCoinsList(
             "usd",
             sortBy,
@@ -36,12 +39,16 @@ class CoinsRepositoryImpl(
         val body = response.body()
         if (body != null) {
             responseFromServerOrCache(response)
-            return body
+            return ApiResponse(body, "", true)
         }
 
         // 429 -> Server limit exceeded
         Log.d("TAG", "getCoinListFromWeb: ${response.errorBody()?.string()}")
-        return emptyList()
+        return ApiResponse(
+            null,
+            response.message(),
+            false
+        )
     }
 
     private fun responseFromServerOrCache(response: Response<CoinsList>) {
