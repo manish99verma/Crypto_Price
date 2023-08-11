@@ -24,13 +24,13 @@
 
             <ImageView
                 android:id="@+id/back_btn"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="5dp"
+                android:padding="3dp"
                 android:src="@drawable/ic_back_arrow" />
 
             <TextView

@@ -10,9 +10,12 @@ import com.manish.cryptoprice.data.model.description.CoinDetails
 import com.manish.cryptoprice.data.model.description.Description
 import com.manish.cryptoprice.data.model.description.Image
 import com.manish.cryptoprice.domain.repository.CoinsRepository
+import com.manish.cryptoprice.presentation.utils.Utility
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import kotlin.math.log
 
 class CoinsRepositoryImpl(
@@ -25,16 +28,26 @@ class CoinsRepositoryImpl(
     }
 
     private suspend fun getCoinListFromWeb(sortBy: String): ApiResponse {
-
-
-        val response = coinsWebDataSource.getCoinsList(
-            "usd",
-            sortBy,
-            100,
-            1,
-            true,
-            "en"
-        )
+        val response: Response<CoinsList>
+        try {
+            response = coinsWebDataSource.getCoinsList(
+                "usd",
+                sortBy,
+                100,
+                1,
+                true,
+                "en"
+            )
+        } catch (e: SocketTimeoutException) {
+            return ApiResponse(null, "No Internet!", false)
+        } catch (e: UnknownHostException) {
+            return ApiResponse(null, "No Internet!", false)
+        } catch (e: Exception) {
+            var msg = e.message
+            if (msg == null)
+                msg = "Unknown error occurred!"
+            return ApiResponse(null, msg, false)
+        }
 
         val body = response.body()
         if (body != null) {

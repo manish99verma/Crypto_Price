@@ -2,22 +2,18 @@ package com.manish.cryptoprice.presentation.ui.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.google.gson.Gson
-import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
-import com.manish.cryptoprice.R
 import com.manish.cryptoprice.data.model.coinsList.CoinsList
 import com.manish.cryptoprice.data.model.coinsList.CoinsListItem
 import com.manish.cryptoprice.data.repository.SortBy
@@ -27,14 +23,14 @@ import com.manish.cryptoprice.presentation.ui.view_models.MainViewModel
 import com.manish.cryptoprice.presentation.ui.view_models.MainViewModelFactory
 import com.manish.cryptoprice.presentation.utils.Utility
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -57,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -123,14 +120,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCoinListItems() {
-        if (!Utility.checkForInternet(this)) {
-            Toast.makeText(this, "No Internet!", Toast.LENGTH_SHORT).show()
-            binding.rvMain.visibility = View.INVISIBLE
-            binding.loadingBar.visibility = View.VISIBLE
-            binding.swipeRefreshLayout.isRefreshing = false
-            return
-        }
+    private fun getCoinListItems(){
+        binding.rvMain.visibility = View.INVISIBLE
+        binding.loadingBar.visibility = View.VISIBLE
+        binding.swipeRefreshLayout.isRefreshing = false
 
         val sentTime = System.currentTimeMillis()
         viewModel.getCoinsList(sortByStringCode[currentSortedIdx]).observe(this) { response ->
@@ -139,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                 return@observe
             }
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(IO) {
                 if (System.currentTimeMillis() - sentTime < 300) {
                     delay(700)
                 }

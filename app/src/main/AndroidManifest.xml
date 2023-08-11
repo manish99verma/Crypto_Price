@@ -15,19 +15,27 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CryptoPrice"
+        android:theme="@style/Splash_Theme"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.ui.activities.DetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.ui.activities.MainActivity"
+            android:name=".presentation.ui.activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:theme="@style/Base.Theme.CryptoPrice"
+            android:name=".presentation.ui.activities.DetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".presentation.ui.activities.MainActivity"
+            android:theme="@style/Base.Theme.CryptoPrice"
+            android:exported="true">
         </activity>
     </application>
 
