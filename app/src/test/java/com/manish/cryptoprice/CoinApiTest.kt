@@ -32,7 +32,9 @@ class CoinApiTest {
         mockResponse.setBody("[]")
         mockWebServer.enqueue(mockResponse)
 
-        val response = coinsApi.getCoinsList("usd", "market_cap_desc", 100, 1, "en")
+        val response = coinsApi.getCoinsList(
+            vs_currency = "usd", order = "market_cap_desc", per_page = 100, page = 1, locale = "en"
+        )
         mockWebServer.takeRequest()
 
         Assert.assertEquals(true, response.body()!!.isEmpty())
@@ -46,7 +48,9 @@ class CoinApiTest {
         mockResponse.setBody(content)
         mockWebServer.enqueue(mockResponse)
 
-        val response = coinsApi.getCoinsList("usd", "market_cap_desc", 100, 1, "en")
+        val response = coinsApi.getCoinsList(
+            vs_currency = "usd", order = "market_cap_desc", per_page = 100, page = 1, locale = "en"
+        )
         mockWebServer.takeRequest()
 
         Assert.assertEquals(false, response.body()!!.isEmpty())
@@ -60,11 +64,35 @@ class CoinApiTest {
         mockResponse.setBody("Something went wrong!")
         mockWebServer.enqueue(mockResponse)
 
-        val response = coinsApi.getCoinsList("usd", "market_cap_desc", 100, 1, "en")
+        val response = coinsApi.getCoinsList(
+            vs_currency = "usd", order = "market_cap_desc", per_page = 100, page = 1, locale = "en"
+        )
         mockWebServer.takeRequest()
 
         Assert.assertEquals(false, response.isSuccessful)
         Assert.assertEquals(404, response.code())
+    }
+
+    @Test
+    fun testGetCoinsListItemWithSparkLine_returnsList() = runTest {
+        val mockResponse = MockResponse()
+        val content = JsonReaderHelper.readFileResource("/coins_list_with_sparkline.json")
+        mockResponse.setResponseCode(200)
+        mockResponse.setBody(content)
+        mockWebServer.enqueue(mockResponse)
+
+        val response = coinsApi.getCoinsList(
+            vs_currency = "usd",
+            order = "market_cap_desc",
+            per_page = 100,
+            page = 1,
+            sparkLine = true,
+            locale = "en"
+        )
+        mockWebServer.takeRequest()
+
+        Assert.assertEquals(200, response.code())
+        Assert.assertEquals(168, response.body()!![0].sparkline_in_7d.price.size)
     }
 
     @Test

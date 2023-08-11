@@ -1,7 +1,6 @@
 package com.manish.cryptoprice.presentation.ui.adapters
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,41 +8,41 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 import com.manish.cryptoprice.R
 import com.manish.cryptoprice.data.model.coinsList.CoinsListItem
 import com.manish.cryptoprice.databinding.ItemCryptoBinding
 import com.manish.cryptoprice.presentation.utils.Utility
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 
 
 class CryptoListAdapter() : RecyclerView.Adapter<CryptoListAdapter.MyViewHolder>() {
     private val mDiffer: AsyncListDiffer<CoinsListItem> =
         AsyncListDiffer(this, DIFF_CALLBACK)
-    private var setGraph: ((GraphView, Boolean, String) -> Unit)? = null
     private var openDetailsListener: ((CoinsListItem) -> Unit?)? = null
     private lateinit var context: Context
 
     object DIFF_CALLBACK : DiffUtil.ItemCallback<CoinsListItem>() {
         override fun areItemsTheSame(oldItem: CoinsListItem, newItem: CoinsListItem): Boolean {
-            return oldItem.market_cap_rank == newItem.market_cap_rank
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: CoinsListItem, newItem: CoinsListItem): Boolean {
-            return oldItem.current_price == newItem.current_price
+            return oldItem == newItem
         }
     }
 
     fun setList(list: List<CoinsListItem>) {
         mDiffer.submitList(list)
-    }
-
-    fun setGraphFunction(func: (GraphView, Boolean, String) -> Unit) {
-        this.setGraph = func
     }
 
     fun setOpenDetailsListener(listener: (CoinsListItem) -> Unit?) {
@@ -108,21 +107,12 @@ class CryptoListAdapter() : RecyclerView.Adapter<CryptoListAdapter.MyViewHolder>
             Glide.with(context)
                 .load(coin.image)
                 .placeholder(R.drawable.ic_placeholder)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .apply(RequestOptions().override(100, 100))
+                .apply(RequestOptions().override(75, 75))
                 .into(binding.imgCoinIcon)
 
 
             //Graph
-            binding.idGraphView.apply {
-                removeAllSeries()
-                gridLabelRenderer.isVerticalLabelsVisible = false
-                gridLabelRenderer.isHorizontalLabelsVisible = false
-                gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
-            }
-
-            setGraph?.let { it(binding.idGraphView, coin.price_change_24h > 0, coin.id) }
-
+            setUpGraph(binding.idGraphView, coin.price_change_24h > 0, coin.sparkline_in_7d.price)
 
             //Click Listener
             binding.imgCoinIcon.setOnClickListener {
@@ -133,6 +123,36 @@ class CryptoListAdapter() : RecyclerView.Adapter<CryptoListAdapter.MyViewHolder>
             }
             binding.root.setOnClickListener {
                 openDetailsListener?.let { it(coin) }
+            }
+        }
+
+        private fun setUpGraph(
+            graphView: GraphView,
+            isGreen: Boolean,
+            list: List<Double>
+        ) {
+            graphView.apply {
+                removeAllSeries()
+                gridLabelRenderer.isVerticalLabelsVisible = false
+                gridLabelRenderer.isHorizontalLabelsVisible = false
+                gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+            }
+
+            CoroutineScope(IO).launch {
+                val seriesData = arrayOfNulls<DataPoint>(list.size)
+
+                list.forEachIndexed { index, d ->
+                    seriesData[index] = DataPoint(index + 1.0, d)
+                }
+
+                val series = LineGraphSeries(seriesData)
+
+                if (isGreen) series.color = graphView.context.getColor(R.color.gain_increased)
+                else series.color = graphView.context.getColor(R.color.gain_decreased)
+
+                withContext(Main) {
+                    graphView.addSeries(series)
+                }
             }
         }
     }

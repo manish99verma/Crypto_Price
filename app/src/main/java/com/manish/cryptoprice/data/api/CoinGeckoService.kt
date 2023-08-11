@@ -9,7 +9,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CoinGeckoService {
-    @GET("coins/markets")
+    @GET(SubDirectory.coinsList)
     suspend fun getCoinsList(
         @Query("vs_currency")
         vs_currency: String,
@@ -19,11 +19,13 @@ interface CoinGeckoService {
         per_page: Int,
         @Query("page")
         page: Int,
+        @Query("sparkline")
+        sparkLine: Boolean = false,
         @Query("locale")
         locale: String
     ): Response<CoinsList>
 
-    @GET("coins/{id}/market_chart")
+    @GET(SubDirectory.historyChart)
     suspend fun getHistoryChart(
         @Path("id")
         id: String,
@@ -35,7 +37,7 @@ interface CoinGeckoService {
         interval: String
     ): Response<GraphValues>
 
-    @GET("coins/{id}")
+    @GET(SubDirectory.coinDetails)
     suspend fun coinDetails(
         @Path("id")
         id: String,

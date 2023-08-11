@@ -1,7 +1,7 @@
-package com.manish.cryptoprice.data.datasource.implementations
+package com.manish.cryptoprice.data.repository.datasource.implementations
 
 import com.manish.cryptoprice.data.api.CoinGeckoService
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
+import com.manish.cryptoprice.data.repository.datasource.interfaces.CoinsWebDataSource
 import com.manish.cryptoprice.data.model.chart.GraphValues
 import com.manish.cryptoprice.data.model.coinsList.CoinsList
 import com.manish.cryptoprice.data.model.description.CoinDetails
@@ -13,14 +13,16 @@ class CoinsWebDataSourceImpl(private val coinGeckoService: CoinGeckoService) : C
         order: String,
         per_page: Int,
         page: Int,
+        sparkLine: Boolean,
         locale: String,
     ): Response<CoinsList> {
         return coinGeckoService.getCoinsList(
-            vs_currency,
-            order,
-            per_page,
-            page,
-            locale,
+            vs_currency = vs_currency,
+            order = order,
+            per_page = per_page,
+            page = page,
+            locale = locale,
+            sparkLine = true
         )
     }
 

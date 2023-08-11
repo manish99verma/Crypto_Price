@@ -1,8 +1,6 @@
 package com.manish.cryptoprice.presentation.di
 
-import com.manish.cryptoprice.data.datasource.interfaces.CoinLocalDatasource
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsCacheDataSource
-import com.manish.cryptoprice.data.datasource.interfaces.CoinsWebDataSource
+import com.manish.cryptoprice.data.repository.datasource.interfaces.CoinsWebDataSource
 import com.manish.cryptoprice.data.repository.CoinsRepositoryImpl
 import com.manish.cryptoprice.domain.repository.CoinsRepository
 import dagger.Module
@@ -18,9 +16,7 @@ class RepositoryModule {
     @Singleton
     fun provideRepositoryModule(
         coinsWebDataSource: CoinsWebDataSource,
-        coinsLocalDatasource: CoinLocalDatasource,
-        coinsCacheDataSource: CoinsCacheDataSource
     ): CoinsRepository {
-        return CoinsRepositoryImpl(coinsCacheDataSource, coinsLocalDatasource, coinsWebDataSource)
+        return CoinsRepositoryImpl( coinsWebDataSource)
     }
 }
