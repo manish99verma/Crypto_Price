@@ -100,6 +100,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         getCoinListItems()
+
+        viewModel.coinsLiveData.observe(this) { response ->
+            if (!response.isSuccessful) {
+                Toast.makeText(this@MainActivity, response.msg, Toast.LENGTH_SHORT).show()
+                return@observe
+            }
+
+            lifecycleScope.launch(IO) {
+
+                withContext(Main) {
+                    binding.apply {
+                        loadingBar.visibility = View.INVISIBLE
+                        swipeRefreshLayout.isRefreshing = false
+                        rvMain.visibility = View.VISIBLE
+                    }
+
+                    setUpAdapter(response.data as CoinsList)
+                }
+            }
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -120,34 +140,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCoinListItems(){
+    private fun getCoinListItems() {
         binding.rvMain.visibility = View.INVISIBLE
         binding.loadingBar.visibility = View.VISIBLE
         binding.swipeRefreshLayout.isRefreshing = false
 
-        val sentTime = System.currentTimeMillis()
-        viewModel.getCoinsList(sortByStringCode[currentSortedIdx]).observe(this) { response ->
-            if (!response.isSuccessful) {
-                Toast.makeText(this@MainActivity, response.msg, Toast.LENGTH_SHORT).show()
-                return@observe
-            }
-
-            lifecycleScope.launch(IO) {
-                if (System.currentTimeMillis() - sentTime < 300) {
-                    delay(700)
-                }
-
-                withContext(Main) {
-                    binding.apply {
-                        loadingBar.visibility = View.INVISIBLE
-                        swipeRefreshLayout.isRefreshing = false
-                        rvMain.visibility = View.VISIBLE
-                    }
-
-                    setUpAdapter(response.data as CoinsList)
-                }
-            }
-        }
+        viewModel.getCoinsList(sortByStringCode[currentSortedIdx])
     }
 
     private fun setUpAdapter(list: List<CoinsListItem>) {

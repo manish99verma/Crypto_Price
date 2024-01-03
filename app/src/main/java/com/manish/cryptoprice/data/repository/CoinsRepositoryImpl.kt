@@ -55,11 +55,17 @@ class CoinsRepositoryImpl(
             return ApiResponse(body, "", true)
         }
 
-        // 429 -> Server limit exceeded
         Log.d("TAG", "getCoinListFromWeb: ${response.errorBody()?.string()}")
+
+        // 429 -> Server limit exceeded
+        val msg = if (response.code() == 429)
+            "Please wait server limit exceeded!"
+        else
+            "Unknown error occurred!"
+
         return ApiResponse(
             null,
-            response.message(),
+            msg,
             false
         )
     }
