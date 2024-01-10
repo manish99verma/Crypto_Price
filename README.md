@@ -23,6 +23,6 @@ Shows Realtime Crypto Prices
 
 ## Screenshots
 
-![App Screenshot](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzyO3WpeCQtiRkwSArQnIm9KB9-yE72nVtm6MkK1tDJZwKBhbqJohAqAvhquxiag9MGLF9bPfovx_2bz43MensrV1FXuZKATOg7Y5dKheKfF7_WhLhNx93BYVa0ag2-84L5nlG-S4EP1ZlcJH4otVRTlTZLNEp3LwMu06kV5_UmzJ2tUckHp-yasfaDy8/s2297/Screenshots.png)
+![App Screenshot](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHfLJxSLZmeZDe40P-QZmIi2DpVrdffRIaqe0S2ervtij4pRFWqWYiovx2fR0ok_TD6Z5hOCa5erKyOYU2Xfb7tkG7ntGw_RYy9ARMBK9RZgpg7DAt5hdAJVqmF8wr2DyS8fhXKuKDpGJKSw7Cx4x14rT7md3HwU3AKls3XVX-ousHMVBpZfR-KDlm_S8/s1863/Crypto%20market%20app.png)
 
 
